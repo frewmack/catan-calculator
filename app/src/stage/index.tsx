@@ -18,6 +18,7 @@ interface BoardComponentProps {
  * @returns The rendered BoardComponent.
  */
 const BoardComponent: React.FC<BoardComponentProps> = (props: BoardComponentProps) => {
+
   return (
     <>
       {Array.from(props.board.getTiles().entries()).map(([key, tile]) => {
@@ -52,7 +53,6 @@ interface CatanStageProps {
 const CatanStage: React.FC<CatanStageProps> = (props: CatanStageProps) => {
   const width = 700;
   const height = 600;
-
 
   return (
     <Stage width={width} height={height}>

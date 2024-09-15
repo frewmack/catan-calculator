@@ -122,6 +122,7 @@ export class Board {
     for (const tile of Array.from(this.tiles.values())) {
       const newPosition = tile.getPosition().rotate(pivot, rotations);
       tile.setPosition(newPosition);
+      this.tiles.set(this.getKey(newPosition), tile);
     }
     return this;
   }
@@ -198,6 +199,19 @@ export class Board {
   public getPlayers(): Player[] {
     return this.players;
   }
+
+  /**
+   * copy function returns a deep copy of the board.
+   * 
+   * @returns A deep copy of the board.
+   */
+  public copy(): Board {
+    const newBoard = new Board();
+    for (const tile of Array.from(this.tiles.values())) {
+      newBoard.addTile(tile.copy());
+    }
+    return newBoard;
+  }
 }
 
 /**
@@ -257,6 +271,10 @@ export class Tile {
 
     public setPosition(position: GridPosition): void {
         this.position = position;
+    }
+
+    public copy(): Tile {
+        return new Tile(this.resource, this.number, this.position.getQ(), this.position.getR());
     }
 }
 

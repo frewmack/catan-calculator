@@ -7,12 +7,12 @@ import { GridPosition } from './model/position';
 
 function App() {
   const [board, setBoard] = useState(Board.generateRandomBoard());
-  const tileSize = 72;
+  const tileSize = 60;
 
   const rotateBoard = (board: Board, pivot: GridPosition, rotations: number) => {
-    const newBoard = board.rotateBoard(pivot, rotations);
+    const newBoard = board.copy();
+    newBoard.rotateBoard(pivot, rotations);
     setBoard(newBoard);
-    console.log(newBoard);
   };
 
   return (  
