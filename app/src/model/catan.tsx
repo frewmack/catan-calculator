@@ -31,7 +31,9 @@ export class Board {
     11: 2,
     12: 1,
   };
-  
+  private static readonly SPIRAL_ORDER = [
+    5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11
+  ];
 
   constructor() {
     this.tiles = new Map();
@@ -44,40 +46,84 @@ export class Board {
   /**
    * generateRandomBoard function generates a random board based on a standard 4 player Catan board.
    */
-  public static generateRandomBoard(): Board {
+  public static generateRandomBoard(method: 'spiral' | 'random' = 'spiral'): Board {
     const board = new Board();
 
-    let tile_bank = { ...Board.RESOURCE_TILE_AMOUNTS };
-    let number_bank = { ...Board.NUMBER_TOKEN_AMOUNTS };
-    
+    let tileBank = { ...Board.RESOURCE_TILE_AMOUNTS };
+
+    // Generate tiles
     for (let q = -2; q <= 2; q++) {
       for (let r = -2; r <= 2; r++) {
         if (Math.abs(new GridPosition(q, r).getS()) > 2) continue;
 
-        let availableResources = Object.entries(tile_bank).filter(([_, count]) => count > 0);
+        let availableResources = Object.entries(tileBank).filter(([_, count]) => count > 0);
         let resource: Resource = 'none';
         if (availableResources.length > 0) {
           const [selectedResource, selectedResourceCount] = availableResources[Math.floor(Math.random() * availableResources.length)];
-          tile_bank[selectedResource as keyof typeof tile_bank] = selectedResourceCount - 1;
+          tileBank[selectedResource as keyof typeof tileBank] = selectedResourceCount - 1;
           resource = selectedResource as Resource;
         }
 
-        let number = 0;
-        if (resource !== 'desert') {
-          let availableNumbers = Object.entries(number_bank).filter(([_, count]) => count > 0);
-          if (availableNumbers.length > 0) {
-            const [selectedNumber, selectedNumberCount] = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
-            number_bank[Number(selectedNumber) as keyof typeof number_bank] = selectedNumberCount - 1;
-            number = parseInt(selectedNumber);
-          }
-        }
-
-        const tile = new Tile(resource, number, q, r);
+        const tile = new Tile(resource, 0, q, r);
         board.addTile(tile);
       }
     }
 
+    // Generate number tokens using spiral algorithm
+    board.generateNumberTokens(method);
     return board;
+  }
+
+  public generateNumberTokens(method: 'spiral' | 'random' = 'spiral'): Board {
+    if (method === 'spiral') {
+      let numberIndex = 0;
+      const spiralPositions = [
+        [0, -2], [1, -2], [2, -2], [2, -1], [2, 0], [1, 1], [0, 2], [-1, 2], [-2, 2], [-2, 1], [-2, 0], [-1, -1], 
+        [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0], [0, 0]
+      ];
+
+      for (const [q, r] of spiralPositions) {
+        const tile = this.getTile(new GridPosition(q, r));
+        if (tile && tile.getResource() !== 'desert') {
+          tile.setNumber(Board.SPIRAL_ORDER[numberIndex]);
+          numberIndex++;
+        }
+      }
+    } else {
+      let numberBank = { ...Board.NUMBER_TOKEN_AMOUNTS };
+
+      for (const tile of Array.from(this.tiles.values())) {
+        if (tile.getResource() === 'desert') continue;
+        
+        let availableNumberEntries = Object.entries(numberBank).filter(([_, count]) => count > 0);
+        
+        if (availableNumberEntries.length > 0) {
+          const [selectedNumber, selectedNumberCount] = availableNumberEntries[Math.floor(Math.random() * availableNumberEntries.length)];
+          
+          // Assign the number to the tile
+          tile.setNumber(parseInt(selectedNumber));
+          
+          // Decrease the count for the assigned number
+          numberBank[parseInt(selectedNumber) as keyof typeof numberBank] = selectedNumberCount - 1;
+        }
+      }
+    }
+    return this;
+  }
+
+  /**
+   * rotateBoard function rotates the board around a pivot point by a specified number of rotations.
+   * 
+   * @param pivot - The pivot point around which to rotate.
+   * @param rotations - The number of 60-degree rotations to perform.
+   * @returns The rotated board.
+   */
+  public rotateBoard(pivot: GridPosition, rotations: number): Board {
+    for (const tile of Array.from(this.tiles.values())) {
+      const newPosition = tile.getPosition().rotate(pivot, rotations);
+      tile.setPosition(newPosition);
+    }
+    return this;
   }
 
   /**
@@ -198,6 +244,19 @@ export class Tile {
      */
     public getPosition(): GridPosition {
         return this.position;
+    }
+
+    /**
+     * setNumber function sets the number of the tile.
+     * 
+     * @param number - The number to set for the tile.
+     */
+    public setNumber(number: number): void {
+        this.number = number;
+    }
+
+    public setPosition(position: GridPosition): void {
+        this.position = position;
     }
 }
 

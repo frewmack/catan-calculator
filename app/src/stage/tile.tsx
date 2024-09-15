@@ -56,6 +56,10 @@ const NumberToken: React.FC<NumberTokenProps> = (props: NumberTokenProps) => {
         y={props.y + props.size / 5}
         radius={props.size / 40}
         fill={props.number === 6 || props.number === 8 ? 'red' : 'black'}
+        shadowColor="rgba(0,0,0,0.2)"
+        shadowBlur={2}
+        shadowOffsetX={1}
+        shadowOffsetY={1}
       />
     ))}
     </>

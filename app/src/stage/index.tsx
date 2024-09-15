@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stage, Layer } from 'react-konva';
+import { Stage, Layer, Rect } from 'react-konva';
 
 import { Board } from '../model/catan';
 import { CatanTile, generateTilePosition } from './tile';
@@ -50,10 +50,23 @@ interface CatanStageProps {
  * @returns The rendered CatanStage component.
  */
 const CatanStage: React.FC<CatanStageProps> = (props: CatanStageProps) => {
+  const width = 700;
+  const height = 600;
+
+
   return (
-    <Stage width={800} height={600}>
+    <Stage width={width} height={height}>
       <Layer>
-        <BoardComponent board={props.board} tileSize={props.tileSize} canvasWidth={800} canvasHeight={600} />
+        <Rect
+          x={0}
+          y={0}
+          width={width}
+          height={height}
+          fill="#0077be"  // Ocean blue color
+        />
+      </Layer>
+      <Layer>
+        <BoardComponent board={props.board} tileSize={props.tileSize} canvasWidth={width} canvasHeight={height} />
       </Layer>
     </Stage>
   );

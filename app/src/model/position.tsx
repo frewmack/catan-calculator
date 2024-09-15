@@ -59,6 +59,41 @@ export class GridPosition {
       new GridPosition(this.q + dq, this.r + dr)
     );
   }
+
+  /**
+   * Rotates this GridPosition around a pivot point by a specified number of rotations.
+   * A positive rotation is clockwise, and a negative rotation is counterclockwise.
+   * One rotation is equivalent to 60 degrees.
+   * 
+   * @param pivot - The GridPosition to rotate around.
+   * @param rotations - The number of 60-degree rotations to perform.
+   * @returns A new GridPosition after the rotation.
+   */
+  public rotate(pivot: GridPosition, rotations: number): GridPosition {
+    // Normalize rotations to be between 0 and 5
+    const normalizedRotations = ((rotations % 6) + 6) % 6;
+
+    // If no rotation, return a copy of this position
+    if (normalizedRotations === 0) {
+      return new GridPosition(this.q, this.r);
+    }
+
+    // Translate to origin
+    let q = this.q - pivot.getQ();
+    let r = this.r - pivot.getR();
+    let s = this.getS() - pivot.getS();
+
+    // Perform rotation
+    for (let i = 0; i < normalizedRotations; i++) {
+      const temp = -s;
+      s = -r;
+      r = -q;
+      q = temp;
+    }
+
+    // Translate back and return new position
+    return new GridPosition(q + pivot.getQ(), r + pivot.getR());
+  }
 }
 
 /**
