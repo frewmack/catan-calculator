@@ -2,13 +2,6 @@ import React from 'react';
 import { Circle, RegularPolygon, Text } from 'react-konva';
 import { Tile, Resource } from '../model/catan';
 
-interface CatanTileProps {
-  tile: Tile;
-  size: number;
-  x: number;
-  y: number;
-}
-
 interface NumberTokenProps {
   number: number;
   size: number;
@@ -16,6 +9,12 @@ interface NumberTokenProps {
   y: number;
 }
 
+/**
+ * NumberToken component renders the number token on the tile.
+ * 
+ * @param props - The properties passed to the component.
+ * @returns The rendered NumberToken component.
+ */
 const NumberToken: React.FC<NumberTokenProps> = (props: NumberTokenProps) => {
   return (
     <>
@@ -55,6 +54,19 @@ const NumberToken: React.FC<NumberTokenProps> = (props: NumberTokenProps) => {
   );
 };
 
+interface CatanTileProps {
+  tile: Tile;
+  size: number;
+  x: number;
+  y: number;
+}
+
+/**
+ * CatanTile component renders the tile on the canvas.
+ * 
+ * @param props - The properties passed to the component.
+ * @returns The rendered CatanTile component.
+ */
 export const CatanTile: React.FC<CatanTileProps> = (props: CatanTileProps) => {
   const resourceColors: Record<Resource, string> = {
     forest: '#228B22',
