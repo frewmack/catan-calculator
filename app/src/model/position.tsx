@@ -42,6 +42,23 @@ export class GridPosition {
   public equals(other: GridPosition): boolean {
     return this.q === other.getQ() && this.r === other.getR();
   }
+
+  /**
+   * Returns an array of GridPositions representing the six neighboring tiles.
+   * The neighbors are returned in clockwise order starting from the top-right.
+   * 
+   * @returns An array of six GridPosition objects representing the neighboring tiles.
+   */
+  public getNeighbors(): GridPosition[] {
+    const directions = [
+      [1, 0], [1, -1], [0, -1],
+      [-1, 0], [-1, 1], [0, 1]
+    ];
+    
+    return directions.map(([dq, dr]) => 
+      new GridPosition(this.q + dq, this.r + dr)
+    );
+  }
 }
 
 /**

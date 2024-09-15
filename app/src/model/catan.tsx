@@ -4,17 +4,80 @@ import { GridPosition, EdgePosition, VertexPosition } from './position';
  * Board class represents the board of the game.
  * It contains the tiles, settlements, and roads.
  */
-class Board {
+export class Board {
   private tiles: Map<string, Tile>;
   private settlements: Map<string, Settlement>;
   private roads: Map<string, Road>;
   private players: Player[];
+  private robberPosition: GridPosition | undefined;
+
+  private static readonly NUM_TILES = 19;
+  private static readonly RESOURCE_TILE_AMOUNTS = {
+    'forest': 4,
+    'hills': 3,
+    'field': 4,
+    'pasture': 4,
+    'mountain': 3,
+    'desert': 1,
+  };
+  private static readonly NUMBER_TOKEN_AMOUNTS = {
+    2: 1,
+    3: 2,
+    4: 2,
+    5: 2,
+    6: 2,
+    8: 2,
+    9: 2,
+    10: 2,
+    11: 2,
+    12: 1,
+  };
 
   constructor() {
     this.tiles = new Map();
     this.settlements = new Map();
     this.roads = new Map();
     this.players = [];
+    this.robberPosition = undefined;
+  }
+
+  /**
+   * generateRandomBoard function generates a random board based on a standard 4 player Catan board.
+   */
+  public static generateRandomBoard(): Board {
+    const board = new Board();
+
+    let tile_bank = { ...Board.RESOURCE_TILE_AMOUNTS };
+    let number_bank = { ...Board.NUMBER_TOKEN_AMOUNTS };
+    
+    for (let q = -2; q <= 2; q++) {
+      for (let r = -2; r <= 2; r++) {
+        if (Math.abs(new GridPosition(q, r).getS()) > 2) continue;
+        
+        let availableResources = Object.entries(tile_bank).filter(([_, count]) => count > 0);
+        let resource: Resource = 'none';
+        if (availableResources.length > 0) {
+          const [selectedResource, selectedResourceCount] = availableResources[Math.floor(Math.random() * availableResources.length)];
+          tile_bank[selectedResource as keyof typeof tile_bank] = selectedResourceCount - 1;
+          resource = selectedResource as Resource;
+        }
+
+        let number = 0;
+        if (resource !== 'desert') {
+          let availableNumbers = Object.entries(number_bank).filter(([_, count]) => count > 0);
+          if (availableNumbers.length > 0) {
+            const [selectedNumber, selectedNumberCount] = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+            number_bank[Number(selectedNumber) as keyof typeof number_bank] = selectedNumberCount - 1;
+            number = parseInt(selectedNumber);
+          }
+        }
+
+        const tile = new Tile(resource, number, q, r);
+        board.addTile(tile);
+      }
+    }
+
+    return board;
   }
 
   /**
@@ -63,6 +126,15 @@ class Board {
   }
 
   /**
+   * getTiles function returns all tiles on the board.
+   * 
+   * @returns The tiles on the board.
+   */
+  public getTiles(): Map<string, Tile> {
+    return this.tiles;
+  }
+
+  /**
    * addPlayer function adds a player to the game.
    * It simply adds the player to the players array.
    * 
@@ -90,7 +162,7 @@ class Board {
  * and each tile "owns" 3 edges (top left 0, top right 1, center right 2) 
  * and 2 vertices (top center 0, top right 1).
  */
-class Tile {
+export class Tile {
     private resource: Resource;
     private number: number;
     private position: GridPosition;
@@ -132,13 +204,13 @@ class Tile {
 /**
  * Resource enum represents the resources that can be found on the tiles.
  */
-type Resource = 'forest' | 'hills' | 'field' | 'pasture' | 'mountain' | 'desert' | 'none';
+export type Resource = 'forest' | 'hills' | 'field' | 'pasture' | 'mountain' | 'desert' | 'none';
 
 /**
  * Settlement class represents a settlement on the board.
  * It contains the position and type of the settlement.
  */
-class Settlement {
+export class Settlement {
     private position: VertexPosition;
     private type: 'city' | 'settlement';
 
@@ -171,7 +243,7 @@ class Settlement {
  * Road class represents a road on the board.
  * It contains the position and type of the road.
  */
-class Road {
+export class Road {
     private position: EdgePosition;
     private owner: Player;
 
@@ -203,7 +275,7 @@ class Road {
  * Player class represents a player in the game.
  * It contains the name of the player.
  */
-class Player {
+export class Player {
     private name: string;
 
     constructor(name: string) {

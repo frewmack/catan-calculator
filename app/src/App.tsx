@@ -1,25 +1,19 @@
 import React from 'react';
-import logo from './logo.svg';
+import { ChakraProvider, Box } from '@chakra-ui/react';
 import './App.css';
+import CatanStage from './stage';
+import { Board } from './model/catan';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  const board = Board.generateRandomBoard();
+  const tileSize = 72;
+
+  return (  
+    <ChakraProvider>
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CatanStage board={board} tileSize={tileSize} />
+      </Box>
+    </ChakraProvider>
   );
 }
 
