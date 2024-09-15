@@ -11,7 +11,6 @@ export class Board {
   private players: Player[];
   private robberPosition: GridPosition | undefined;
 
-  private static readonly NUM_TILES = 19;
   private static readonly RESOURCE_TILE_AMOUNTS = {
     'forest': 4,
     'hills': 3,
@@ -32,6 +31,7 @@ export class Board {
     11: 2,
     12: 1,
   };
+  
 
   constructor() {
     this.tiles = new Map();
@@ -53,7 +53,7 @@ export class Board {
     for (let q = -2; q <= 2; q++) {
       for (let r = -2; r <= 2; r++) {
         if (Math.abs(new GridPosition(q, r).getS()) > 2) continue;
-        
+
         let availableResources = Object.entries(tile_bank).filter(([_, count]) => count > 0);
         let resource: Resource = 'none';
         if (availableResources.length > 0) {

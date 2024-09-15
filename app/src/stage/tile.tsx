@@ -22,9 +22,13 @@ const NumberToken: React.FC<NumberTokenProps> = (props: NumberTokenProps) => {
         x={props.x}
         y={props.y}
         radius={props.size / 3}
-        fill="white"
+        fill="#F5F5DC"
         stroke="black"
         strokeWidth={1}
+        shadowColor="rgba(0,0,0,0.5)"
+        shadowBlur={2}
+        shadowOffsetX={1}
+        shadowOffsetY={1}
       />
       <Text
         x={props.x}
@@ -40,6 +44,10 @@ const NumberToken: React.FC<NumberTokenProps> = (props: NumberTokenProps) => {
         offsetX={props.size / 4}
         offsetY={props.size / 4}
         fill={props.number === 6 || props.number === 8 ? 'red' : 'black'}
+        shadowColor="rgba(0,0,0,0.5)"
+        shadowBlur={2}
+        shadowOffsetX={1}
+        shadowOffsetY={1}
       />
     {Array.from({ length: 6 - Math.abs(7 - props.number) }).map((_, index) => (
       <Circle
